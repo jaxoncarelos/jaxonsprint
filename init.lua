@@ -61,7 +61,7 @@ net.Receive("ChanceForDouble", function()
         if (ply:getDarkRPVar("money") <= 500) then return end
 
         ent.ChanceForDouble = true
-        ply:addMoney( 45000000000 )
+        ply:addMoney( -450000 )
     end
 end)
 util.AddNetworkString("UpgradePrintAmount")
