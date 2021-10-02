@@ -1,14 +1,13 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("imgui.lua")
-AddCSLuaFile("printer_config.lua")
 
 include("shared.lua")
 
-local interval = 1
+local interval = 4
 
 function ENT:Initialize()
-
+    math.randomseed(os.time())
     self:SetModel("models/props_c17/consolebox01a.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -43,17 +42,38 @@ net.Receive("CollectMoney", function(ply)
     local ply = net.ReadEntity()
     local money = ent:GetMoneyAmount()
     if money <= 1200 then return end
-    ent:SetMoneyAmount(0)
-    ply:addMoney(money)
+    if ent.ChanceForDouble then
+        local r = math.random(1,40)
+        if ( r == 2 ) then
+            money = money * 2
+        end
+    end
+        ent:SetMoneyAmount(0)
+        ply:addMoney(money)
 
+end)
+util.AddNetworkString("ChanceForDouble")
+net.Receive("ChanceForDouble", function() 
+    local ply = net.ReadEntity()
+    local ent = net.ReadEntity()
+    local eye = ply:GetEyeTrace()
+    if (eye.Entity:GetClass() == "jaxonsent") then
+        if (ply:getDarkRPVar("money") <= 500) then return end
+
+        ent.ChanceForDouble = true
+        ply:addMoney( 45000000000 )
+    end
 end)
 util.AddNetworkString("UpgradePrintAmount")
 net.Receive("UpgradePrintAmount", function() 
     local ply = net.ReadEntity()
     local ent = net.ReadEntity()
-    local changeAmount = 200 * ent:GetChangeAmount()
-    if (ply:getDarkRPVar("money") <= changeAmount) then return end
-    ent:SetChangeAmount(ent:GetChangeAmount() * 2)
-    ply:addMoney( -(200 * ent:GetChangeAmount()) )
+    local eye = ply:GetEyeTrace()
+    if (eye.Entity:GetClass() == "jaxonsent") then
+        local changeAmount = 200 * ent:GetChangeAmount()
+        if (ply:getDarkRPVar("money") <= changeAmount) then return end
+        ent:SetChangeAmount(ent:GetChangeAmount() * 2)
+        ply:addMoney( -(200 * ent:GetChangeAmount()) )
+    end
 end)
 
