@@ -53,10 +53,10 @@ function ENT:DrawTranslucent()
                     net.WriteEntity(LocalPlayer())
                     net.WriteEntity(self)
                     net.SendToServer()
+                    self.ChanceForDouble = true
                 end
             else
                 if imgui.xTextButton("Double Money Gamble", "!Roboto@24", -32, 30, 310, 40, 1, Color(255,0,0), Color(255, 0,0), Color(255,0,0)) then
-                
                 end
             end
             if imgui.xTextButton("Return", "!Roboto@24", -32, 110, 310, 40, 1, Color(255,255,255), Color(155, 155,155), Color(255,0,0)) then
